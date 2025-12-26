@@ -1,0 +1,127 @@
+/* SweetAlert base */
+.swal2-popup {
+  font-family: Avenir, sans-serif !important;
+  border-radius: 16px;
+  background: #f6fffedf;
+  backdrop-filter: blur(20px);
+  color: #252525;
+  box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+
+.swal2-popup,
+.swal2-title,
+.swal2-html-container,
+.swal2-confirm,
+.swal2-cancel {
+  font-family: Avenir, sans-serif !important;
+}
+
+.swal-toast-avenir {
+  font-family: Avenir, sans-serif;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+
+/* Título */
+.swal2-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #252525;
+}
+
+/* Texto */
+.swal2-html-container {
+  color: #414141;
+  font-size: 14px;
+}
+
+/* Lista camisas */
+.swal-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+/* Botones */
+.swal2-confirm {
+  background: linear-gradient(135deg, #CB2D2D, #BA3C3C) !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  font-weight: 600;
+}
+
+.swal2-cancel {
+  background: #414141 !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+}
+
+/* Toast */
+.swal2-toast {
+  border-radius: 14px !important;
+}
+
+
+/* ===============================
+   ICONOS 
+================================ */
+
+/* Iconos animados */
+.swal2-icon {
+  animation: popIcon .4s ease-out;
+}
+
+/* SUCCESS */
+.swal2-success {
+  border-color: #2ecc71 !important;
+  background: rgba(46, 204, 113, .08);
+}
+
+.swal2-success [class^="swal2-success-line"] {
+  background-color: #2ecc71 !important;
+}
+
+.swal2-success-ring {
+  border-color: rgba(46, 204, 113, .3) !important;
+}
+
+
+/* ERROR */
+.swal2-error {
+  border-color: #DC143C !important;
+  background: rgba(203, 45, 45, .08);
+}
+
+.swal2-error [class^="swal2-x-mark-line"] {
+  background-color: #DC143C !important;
+}
+
+/* WARNING */
+.swal2-warning {
+  border-color: #FFA239 !important;
+  color: #FFA239 !important;
+  background: rgba(255, 225, 0, .15);
+}
+
+/* INFO */
+.swal2-info {
+  border-color: #0D92F4 !important;
+  color: #0D92F4 !important;
+  background: rgba(65, 65, 65, .1);
+}
+
+@keyframes popIcon {
+  0% {
+    transform: scale(.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Barra de tiempo */
+.swal2-timer-progress-bar {
+  background: linear-gradient(90deg, #FFE100, #CB2D2D);
+}

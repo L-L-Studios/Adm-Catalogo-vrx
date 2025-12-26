@@ -1,0 +1,13 @@
+Blanco #f6fffe
+Rojo principal #CB2D2D -  
+Gris #414141
+Negro #252525
+
+Rojo complementario #BA3C3C - 
+
+Degradados:
+
+#FFE100
+
+
+Fuente: Avenir
