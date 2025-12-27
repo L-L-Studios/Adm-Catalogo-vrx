@@ -1,0 +1,77 @@
+/* Navbar fijo */
+.navbar-ccatalogo {
+  position: fixed;
+  left: 50% !important;
+  top: 10px !important;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1200px;
+  padding: 0px 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  z-index: 1000;
+  transition: all 0.35s ease;
+}
+
+.btn-volver {
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: white;
+  padding: 8px;
+}
+
+.logo {
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 26px;
+  color: white;
+}
+
+/*FONDO ANIMADO ROJO*/
+.catalogo-fondo-bg {
+    min-height: 100vh;
+    display: flex;
+    padding: 50px 20px; /* Espacio para el navbar */
+    
+    /* CORRECCIONES PARA EL FONDO */
+    background-image: url(/images/bg-fondo-moto.png);
+    background-size: cover; 
+    background-position: center center; /* Centra la imagen */
+    background-repeat: no-repeat; 
+    background-attachment: fixed; /* Efecto parallax  */
+    
+    /* Asegurar que cubra todo el viewport */
+    width: 100%;
+    position: relative;
+}
+
+/* =========================
+   RESPONSIVE PARA NAVBAR
+========================= */
+@media (max-width: 768px) {
+  .navbar-ccatalogo {
+    width: 95%;
+    padding: 5px 15px;
+  }
+  
+  .logo {
+    font-size: 22px;
+  }
+  
+  .btn-volver {
+    font-size: 1.2rem;
+  }
+  
+  .producto-fondo {
+    padding: 0 15px 30px;
+  }
+}
