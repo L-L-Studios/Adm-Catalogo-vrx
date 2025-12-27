@@ -1,7 +1,7 @@
 :root {
   --color-text: #3c3849;
   --color-muted: #adabb4;
-  --color-primary: #8a6bf1;
+  --color-primary: #f16b6b;
 }
 
 * {
@@ -20,16 +20,16 @@ body {
 }
 
 .card {
-    background: #f6fffe;
-    border-radius: 30px;
-    width: 100%;
-    min-height: 90vh;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 80px 100px rgb(0 0 0 / 15%);
+  background: #f6fffe;
+  border-radius: 30px;
+  width: 100%;
+  min-height: 90vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 80px 100px rgb(0 0 0 / 15%);
 }
 
 .image {

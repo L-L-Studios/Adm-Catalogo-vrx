@@ -68,7 +68,7 @@ async function cargarVista(vista) {
 // logout
 function logout() {
   localStorage.clear();
-  location.href = "login.html";
+  location.href = "/";
 }
 
 // inicial
