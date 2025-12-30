@@ -1,8 +1,5 @@
 .aside-sidebar{
-  background: url('https://l-l-studios.github.io/Adm-Catalogo-vrx/images/bg-sidebar.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+
   position: relative;
   z-index: 0;
 }
