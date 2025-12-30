@@ -1,5 +1,5 @@
 .aside-sidebar{
-  background: url('/images/bg-sidebar.png');
+  background: url('images/bg-sidebar.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -8,17 +8,17 @@
 }
 
 .aside-sidebar::before{
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        #f6fffe,
-        #f6fffe83,
-        rgba(0, 0, 0, 0.01)
-    );
-    pointer-events: none;   /* no bloquea clics */
-    z-index: 0;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      to bottom,
+      #f6fffe,
+      #f6fffe83,
+      rgba(0, 0, 0, 0.01)
+  );
+  pointer-events: none;   /* no bloquea clics */
+  z-index: 0;
 }
 
 .aside-sidebar *{
@@ -50,5 +50,5 @@
 }
 
 .lbl-Adm{
-    color: #252525;
+  color: #252525;
 }
