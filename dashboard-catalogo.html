@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
 
   <link rel="stylesheet" href="css/style-notif.css">
+  <link rel="stylesheet" href="css/style-sidebar-dashboard.css">
+  <link rel="stylesheet" href="css/style-dashboard.css">
 </head>
 
 <body style="font-family: Avenir">
@@ -17,46 +19,63 @@
 <div class="d-flex">
 
   <!-- SIDEBAR -->
-  <aside class="bg-dark text-white p-3 vh-100" style="width:240px">
-    <h5 class="mb-4">Admin</h5>
+  <aside class=" p-3 vh-100 aside-sidebar" style="width:240px">
+    <h5 class="mb-4 lbl-Adm">Administrador</h5>
 
     <ul class="nav flex-column gap-2">
       <li>
-        <button class="nav-link text-white btn btn-link text-start"
+        <button class="nav-link text-white btn btn-link text-start active"
           onclick="cargarVista('pendientes')">
           📦 Pedidos pendientes
         </button>
       </li>
+
+      <li>
+        <button class="nav-link text-white btn btn-link text-start"
+          onclick="cargarVista('personalizados')">
+         Personalizados (Contacto)
+        </button>
+      </li>
+
       <li>
         <button class="nav-link text-white btn btn-link text-start"
           onclick="cargarVista('completados')">
           ✅ Aprobados / completados
         </button>
       </li>
+
       <li>
         <button class="nav-link text-white btn btn-link text-start"
           onclick="cargarVista('rechazados')">
           ❌ Rechazados
         </button>
       </li>
+
     </ul>
   </aside>
 
   <!-- MAIN -->
-  <main class="flex-grow-1 p-4 bg-light">
+  <main class="flex-grow-1 p-4 bg-dashboard">
 
     <!-- TOP BAR -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 id="titulo-vista">Dashboard</h4>
+      <h4 id="titulo-vista" style="color: #f6fffe;">Dashboard</h4>
 
       <!-- Popup/menu -->
-      <div class="dropdown">
-        <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
-          <i class="ph ph-user-circle"></i>
-          <span id="admin-name"></span>
+      <div class="dropdown user-dropdown">
+        <button class="btn  btn-drop-popup" data-bs-toggle="dropdown">
+
+            <i class="ph ph-user-circle"></i>
+            <span id="admin-name"></span>
+
+            <!-- ícono de flecha -->
+            <i class="ph ph-caret-down caret-icon"></i>
+
         </button>
 
-        <ul class="dropdown-menu dropdown-menu-end">
+        <ul class="dropdown-menu dropdown-menu-end user-menu">
+          <li class="menu-header"><span>Opciones</span></li>
+
           <li>
             <button class="dropdown-item"
               onclick="window.location.href='/dashboard/crear-catalogo.html'">
@@ -67,12 +86,11 @@
           <li><hr class="dropdown-divider"></li>
 
           <li>
-            <button class="dropdown-item text-danger" onclick="logout()">
+            <button class="dropdown-item logout" onclick="logout()">
               Cerrar sesión
             </button>
           </li>
         </ul>
-
       </div>
       
     </div>
@@ -114,6 +132,19 @@
 <script src="js/supabase.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js-dashboard/dash-modal.js"></script>
+
+<script>
+  document.addEventListener("shown.bs.dropdown", e => {
+    e.target.querySelector(".caret-icon").classList
+      .replace("ph-caret-down", "ph-caret-up");
+  });
+
+  document.addEventListener("hidden.bs.dropdown", e => {
+    e.target.querySelector(".caret-icon").classList
+      .replace("ph-caret-up", "ph-caret-down");
+  });
+</script>
+
 
 </body>
 </html>

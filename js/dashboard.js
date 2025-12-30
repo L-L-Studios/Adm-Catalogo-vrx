@@ -23,12 +23,18 @@ let scriptActual = null;
 
 // cargar vista
 async function cargarVista(vista) {
+  marcarActivo(vista);
 
   const rutas = {
     pendientes: {
       titulo: "Pedidos pendientes",
       html: "dashboard/pedidos-pendientes.html",
       js: "js-dashboard/pedidos-pendientes.js"
+    },
+    personalizados: {
+      titulo: "Pedidos personalizados",
+      html: "dashboard/pedidos-personalizados.html",
+      js: "js-dashboard/pedidos-personalizados.js"
     },
     completados: {
       titulo: "Pedidos completados",
@@ -90,24 +96,44 @@ async function aprobarPedido(id) {
 
   if (!r.isConfirmed) return;
 
-  // obtener pedido
+  // Obtener pedido
   const { data: pedido } = await supabase
-    .from("pedidos")
+    .from("pedidos_camisas")
     .select("*")
     .eq("id", id)
     .single();
 
-  // insertar en completados
-  await supabase.from("pedidos_completados").insert({
-    ...pedido,
+  // Insertar en completados con tipo 'nuevos'
+  const { error } = await supabase.from("pedidos_completados").insert({
+    id: pedido.id,
+    nombre: pedido.nombre,
+    email: pedido.email,
+    direccion: pedido.direccion,
+    whatsapp: pedido.whatsapp,
+    metodo_pago: pedido.metodo_pago,
+    camisas: JSON.stringify(pedido.camisas),
+    total: pedido.total,
+    tipo_pedido: 'nuevos',
+    created_at: pedido.created_at,
     completed_at: new Date().toISOString()
   });
 
-  // eliminar de pendientes
-  await supabase.from("pedidos").delete().eq("id", id);
+  if (error) {
+    Swal.fire("Error", "No se pudo completar el pedido", "error");
+    console.error(error);
+    return;
+  }
+
+  // Eliminar de pendientes
+  await supabase.from("pedidos_camisas").delete().eq("id", id);
 
   Swal.fire("Aprobado", "Pedido completado correctamente", "success");
-  cargarVista("pendientes");
+  
+  // Recargar la vista actual
+  const vistaActual = document.getElementById('titulo-vista').textContent;
+  if (vistaActual.includes('pendientes')) {
+    cargarVista('pendientes');
+  }
 }
 
 
@@ -124,7 +150,7 @@ async function reconsiderarPedido(id) {
   if (!r.isConfirmed) return;
 
   await supabase
-    .from("pedidos")
+    .from("pedidos_camisas")
     .update({ status: "pendiente" })
     .eq("id", id);
 
@@ -144,13 +170,44 @@ async function rechazarPedido(id) {
 
   if (!r.isConfirmed) return;
 
-  await supabase
-    .from("pedidos")
-    .update({ status: "rechazado" })
-    .eq("id", id);
+  // Obtener pedido
+  const { data: pedido } = await supabase
+    .from("pedidos_camisas")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-  Swal.fire("Rechazado", "Pedido marcado como rechazado", "success");
-  cargarVista("pendientes");
+  // Insertar en rechazados con tipo 'nuevos'
+  const { error } = await supabase.from("pedidos_rechazados").insert({
+    id: pedido.id,
+    nombre: pedido.nombre,
+    email: pedido.email,
+    direccion: pedido.direccion,
+    whatsapp: pedido.whatsapp,
+    metodo_pago: pedido.metodo_pago,
+    camisas: JSON.stringify(pedido.camisas),
+    total: pedido.total,
+    tipo_pedido: 'nuevos',
+    created_at: pedido.created_at,
+    rejected_at: new Date().toISOString()
+  });
+
+  if (error) {
+    Swal.fire("Error", "No se pudo rechazar el pedido", "error");
+    console.error(error);
+    return;
+  }
+
+  // Eliminar de pendientes
+  await supabase.from("pedidos_camisas").delete().eq("id", id);
+
+  Swal.fire("Rechazado", "Pedido movido a rechazados", "success");
+  
+  // Recargar la vista actual
+  const vistaActual = document.getElementById('titulo-vista').textContent;
+  if (vistaActual.includes('pendientes')) {
+    cargarVista('pendientes');
+  }
 }
 
 
@@ -166,8 +223,19 @@ async function eliminarRechazado(id) {
 
   if (!r.isConfirmed) return;
 
-  await supabase.from("pedidos").delete().eq("id", id);
+  await supabase.from("pedidos_camisas").delete().eq("id", id);
 
   Swal.fire("Eliminado", "Pedido eliminado", "success");
   cargarVista("rechazados");
+}
+
+/* marcar en sidebar */
+function marcarActivo(nombre) {
+  document
+    .querySelectorAll(".aside-sidebar .nav-link")
+    .forEach(btn => btn.classList.remove("active"));
+
+  document
+    .querySelector(`[onclick="cargarVista('${nombre}')"]`)
+    ?.classList.add("active");
 }

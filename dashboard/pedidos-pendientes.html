@@ -1,5 +1,6 @@
 <div class="row mb-4">
-  <div class="col-md-6">
+
+  <div class="col-md-4">
     <div class="card shadow-sm">
       <div class="card-body">
         <h6 class="text-muted">Pedidos actuales</h6>
@@ -8,7 +9,16 @@
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="text-muted">Pedidos personalizados</h6>
+        <h3 id="pedidos-personalizados">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
     <div class="card shadow-sm">
       <div class="card-body">
         <h6 class="text-muted">Pedidos totales</h6>
@@ -16,10 +26,16 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <div class="card shadow-sm">
   <div class="card-body">
+
+  <div class="col-md-6">
+    <input id="busqueda-pendientes" class="form-control" placeholder="Buscar por nombre o email...">
+  </div>
+
     <table class="table align-middle">
       <thead class="table-dark">
         <tr>
