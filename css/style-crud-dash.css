@@ -1,0 +1,316 @@
+/*CRUD*/
+.card-p-actual{
+  position: relative;
+  background: radial-gradient(circle at bottom left, #f67153d9 0%, #ffebeb 35%, #f6fffe 100%);
+  overflow: hidden;
+  border-radius: 20px;
+  
+}
+.notiglow,
+.notiborderglow {
+  position: absolute;
+  width: 20rem;
+  height: 20rem;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle closest-side at center, rgb(233, 62, 62), transparent);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.notiglow {
+  z-index: 2;
+}
+
+.notiborderglow {
+  z-index: 1;
+}
+
+.card-p-actual:hover .notiglow {
+  opacity: 0.1
+}
+
+.card-p-actual:hover .notiborderglow {
+  opacity: 0.1
+}
+
+.card-p-pers,
+.card-p-total {
+  position: relative;
+  background: radial-gradient(circle at bottom left, #fff1f1 40%, #f6fffe 100%);
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+
+/*textos : Pedidos actuales, personalizados y total*/
+.lbl-p-actual{
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 10 !important;
+}
+
+.lbl-p-pers,
+.lbl-p-total{
+  font-size: 16px;
+  font-weight: bold;
+}
+
+
+.shadow-sm {
+  border-radius: 20px;
+}
+
+/*BUSQUEDA DE PEDIDOS PENDIENTES*/
+.c-b-pendiente{
+  position: relative;
+  background: rgba(255, 255, 255, 0.664);
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  max-width: 900px;
+  transition: transform 400ms;
+  transform-style: preserve-3d;
+  perspective: 500px;
+}
+
+.shadow__input {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  filter: blur(30px);
+  border-radius: 20px;
+  background-color: #f18c09b2;
+  background-image: radial-gradient(at 85% 51%, hsla(60,60%,61%,1) 0px, transparent 50%),
+    radial-gradient(at 74% 68%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 64% 79%, #f4b266 0px, transparent 50%),
+    radial-gradient(at 75% 16%, #f6fffe 0px, transparent 50%),
+    radial-gradient(at 90% 65%, #63e3aa 0px, transparent 50%),
+    radial-gradient(at 91% 83%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 72% 91%, #8fbaef 0px, transparent 50%);
+}
+
+#busqueda-pendientes{
+  border-radius: 22px;
+  border: none;
+}
+
+#busqueda-pendientes:focus,
+#busqueda-pendientes:hover{
+  border: none !important ;
+}
+/*-----------------------------------------------------------------*/
+/*BUSQUEDA DE PEDIDOS PERSONALIZADOS*/
+.c-b-personalizado{
+  position: relative;
+  background: rgba(255, 255, 255, 0.664);
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  max-width: 900px;
+  transition: transform 400ms;
+  transform-style: preserve-3d;
+  perspective: 500px;
+}
+
+.shadow__input_p {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  filter: blur(30px);
+  border-radius: 20px;
+  background-color: #ddd320b2;
+  background-image: radial-gradient(at 85% 51%, hsla(60,60%,61%,1) 0px, transparent 50%),
+    radial-gradient(at 74% 68%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 64% 79%, #ffee90 0px, transparent 50%),
+    radial-gradient(at 75% 16%, #f6fffe 0px, transparent 50%),
+    radial-gradient(at 90% 65%, #63e3aa 0px, transparent 50%),
+    radial-gradient(at 91% 83%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 72% 91%, #8fbaef 0px, transparent 50%);
+}
+
+#busqueda-personalizados{
+  border-radius: 22px;
+  border: none;
+}
+
+#busqueda-personalizados:focus,
+#busqueda-personalizados:hover{
+  border: none !important ;
+}
+
+/*-----------------------------------------------------------------*/
+/*BUSQUEDA DE PEDIDOS COMPLETADOS*/
+.c-b-completado{
+  position: relative;
+  background: rgba(255, 255, 255, 0.664);
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  max-width: 900px;
+  transition: transform 400ms;
+  transform-style: preserve-3d;
+  perspective: 500px;
+}
+
+.shadow__input_c {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  filter: blur(30px);
+  border-radius: 20px;
+  background-color: #00ad54b2;
+  background-image: radial-gradient(at 85% 51%, hsla(60,60%,61%,1) 0px, transparent 50%),
+    radial-gradient(at 74% 68%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 64% 79%, #f46666 0px, transparent 50%),
+    radial-gradient(at 75% 16%, #f6fffe 0px, transparent 50%),
+    radial-gradient(at 90% 65%, #63e3aa 0px, transparent 50%),
+    radial-gradient(at 91% 83%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 72% 91%, #8fbaef 0px, transparent 50%);
+}
+
+#busqueda-completados{
+  border-radius: 22px;
+  border: none;
+}
+
+#busqueda-completados:focus,
+#busqueda-completados:hover{
+  border: none !important ;
+}
+
+/*-----------------------------------------------------------------*/
+/*BUSQUEDA DE PEDIDOS RECHAZADOS*/
+.c-b-rechazado{
+position: relative;
+  background: rgba(255, 255, 255, 0.664);
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  max-width: 900px;
+  transition: transform 400ms;
+  transform-style: preserve-3d;
+  perspective: 500px;
+}
+
+.shadow__input_r {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  filter: blur(30px);
+  border-radius: 20px;
+  background-color: #ad0000b2;
+  background-image: radial-gradient(at 85% 51%, hsla(60,60%,61%,1) 0px, transparent 50%),
+    radial-gradient(at 74% 68%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 64% 79%, #f46666 0px, transparent 50%),
+    radial-gradient(at 75% 16%, #f6fffe 0px, transparent 50%),
+    radial-gradient(at 90% 65%, #63e3aa 0px, transparent 50%),
+    radial-gradient(at 91% 83%, #9ca3ed 0px, transparent 50%),
+    radial-gradient(at 72% 91%, #8fbaef 0px, transparent 50%);
+}
+
+#busqueda-rechazados{
+  border-radius: 22px;
+  border: none;
+}
+
+#busqueda-rechazados:focus,
+#busqueda-rechazados:hover{
+  border: none !important ;
+}
+
+/*-----------------------------------------------------------------*/
+/*DISEÑO DE LAS TABLAS DEL DASHBOARD*/
+
+.table-dashboard, .table-completado, .table-rechazado{
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;        /* mantiene las esquinas redondeadas */
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+/*TABLA PEDIDO ACTUAL Y PERSONALIZADO*/
+.table-dashboard thead th{
+    background-color: #414141 !important;
+    font-weight: 600;
+}
+
+.text-end {
+    text-align: center !important;
+}
+
+.table-dashboard tbody td{
+    padding: 8px;
+}
+
+.table-dashboard tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+ /*celdas*/
+.table-dashboard tbody td {
+  border-top: 1px solid #e7e7e7;
+  padding: 14px 16px;
+}
+
+/*TABLA COMPLETADO*/
+.table-completado thead th{
+    background-color: #00ad54 !important;
+    font-weight: 600;
+}
+
+.table-completado tbody td{
+    padding: 8px;
+}
+
+.table-completado tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/*TABLA RECHAZADO*/
+.table-rechazado thead th{
+    background-color: #dc2626 !important;
+    font-weight: 600;
+}
+
+.table-rechazado tbody td{
+    padding: 8px;
+}
+
+.table-rechazado tbody tr:last-child td {
+  border-bottom: 0;
+}

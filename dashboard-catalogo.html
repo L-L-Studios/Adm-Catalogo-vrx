@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/style-notif.css">
   <link rel="stylesheet" href="css/style-sidebar-dashboard.css">
   <link rel="stylesheet" href="css/style-dashboard.css">
+  <link rel="stylesheet" href="css/style-crud-dash.css">
 </head>
 
 <body style="font-family: Avenir">
@@ -36,7 +37,7 @@
       background-repeat: no-repeat;
     "
   >
-    <h5 class="mb-4 lbl-Adm">Administrador</h5>
+    <h5 class="mb-4 lbl-Adm">VRX</h5>
 
     <ul class="nav flex-column gap-2">
       <li>
@@ -114,6 +115,15 @@
     <!-- CONTENIDO -->
     <div id="contenido"></div>
 
+    <!-- BOTON back to top -->
+    <a id="scroll-up" class="scroll-up" href="#">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h24v24H0z" fill="none"></path>
+        <path fill="rgba(255,255,255,1)" d="M11.9997 10.8284L7.04996 15.7782L5.63574 14.364L11.9997 8L18.3637 14.364L16.9495 15.7782L11.9997 10.8284Z">
+        </path>
+      </svg>
+    </a>
+
   </main>
 </div>
 
@@ -149,6 +159,7 @@
 <script src="js/dashboard.js"></script>
 <script src="js-dashboard/dash-modal.js"></script>
 
+<!-- ICONO DEL POPUP ARRIBA ABAJO -->
 <script>
   document.addEventListener("shown.bs.dropdown", e => {
     e.target.querySelector(".caret-icon").classList
@@ -158,6 +169,29 @@
   document.addEventListener("hidden.bs.dropdown", e => {
     e.target.querySelector(".caret-icon").classList
       .replace("ph-caret-up", "ph-caret-down");
+  });
+</script>
+
+<!-- ICONO BACK TO TOP -->
+<script>
+  const scrollBtn = document.getElementById("scroll-up");
+
+  // Mostrar cuando se baja
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 200) {
+      scrollBtn.classList.add("show");
+    } else {
+      scrollBtn.classList.remove("show");
+    }
+  });
+
+  // Ir arriba
+  scrollBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   });
 </script>
 

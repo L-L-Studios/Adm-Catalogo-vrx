@@ -75,3 +75,42 @@
 .user-menu .logout:hover{
   background: #fdeaea;
 }
+
+
+/*BACK TO TOP */
+a {
+  text-decoration: none;
+}
+/* <main-style> ============================ */
+.scroll-up {
+	position: fixed; 
+  right: 1.50rem;
+  bottom: 20px;
+  z-index: 9999;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #CB2D2D, #E84E4E);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: bottom .4s, transform .4s;
+}
+
+.scroll-up:hover {
+  transform: translateY(-.25rem);
+}
+
+/* Show scroll-up */
+._show-scroll {
+  bottom: 3rem;
+}
+
+@media (max-width: 1199.98px) {
+  .scroll-up {
+    right: 1rem;
+  }
+}

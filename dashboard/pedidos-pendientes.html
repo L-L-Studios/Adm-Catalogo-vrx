@@ -2,8 +2,10 @@
 
   <div class="col-md-4">
     <div class="card shadow-sm">
-      <div class="card-body">
-        <h6 class="text-muted">Pedidos actuales</h6>
+      <div class="card-body card-p-actual">
+        <div class="notiglow"></div>
+        <div class="notiborderglow"></div>
+        <h6 class="text-muted lbl-p-actual">Pedidos actuales</h6>
         <h3 id="pedidos-actuales">0</h3>
       </div>
     </div>
@@ -11,8 +13,8 @@
 
   <div class="col-md-4">
     <div class="card shadow-sm">
-      <div class="card-body">
-        <h6 class="text-muted">Pedidos personalizados</h6>
+      <div class="card-body card-p-pers">
+        <h6 class="text-muted lbl-p-pers">Pedidos personalizados</h6>
         <h3 id="pedidos-personalizados">0</h3>
       </div>
     </div>
@@ -20,8 +22,8 @@
 
   <div class="col-md-4">
     <div class="card shadow-sm">
-      <div class="card-body">
-        <h6 class="text-muted">Pedidos totales</h6>
+      <div class="card-body card-p-total">
+        <h6 class="text-muted lbl-p-total">Pedidos totales</h6>
         <h3 id="pedidos-totales">0</h3>
       </div>
     </div>
@@ -33,10 +35,14 @@
   <div class="card-body">
 
   <div class="col-md-6">
-    <input id="busqueda-pendientes" class="form-control" placeholder="Buscar por nombre o email...">
+    <div class="c-b-pendiente">
+      <div class="shadow__input"></div>
+      <input id="busqueda-pendientes" class="form-control" placeholder="Buscar por nombre o email..."> 
+    </div>   
+     
   </div>
 
-    <table class="table align-middle">
+    <table class="table align-middle table-dashboard">
       <thead class="table-dark">
         <tr>
           <th>Cliente</th>
@@ -47,5 +53,6 @@
       </thead>
       <tbody id="tabla-pedidos"></tbody>
     </table>
+    
   </div>
 </div>
