@@ -43,7 +43,7 @@
     padding: 50px 20px; /* Espacio para el navbar */
     
     /* CORRECCIONES PARA EL FONDO */
-    background-image: url(../images/bg-fondo-moto.png);
+    background-image: url("https://l-l-studios.github.io/Adm-Catalogo-vrx/images/bg-fondo-moto.png");
     background-size: cover; 
     background-position: center center; /* Centra la imagen */
     background-repeat: no-repeat; 
