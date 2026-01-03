@@ -319,44 +319,47 @@ document.getElementById("formCamisa").addEventListener("submit", async e => {
 // ============================
 //  TABLA
 // ============================
+// Busca la función cargarTabla() y modifícala:
 async function cargarTabla() {
-  const { data } = await supabase
-    .from("catalogo_camisas")
-    .select("*")
-    .order("created_at", { ascending: false });
+    const { data } = await supabase
+        .from("catalogo_camisas")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  const body = document.getElementById("lista");
-  body.innerHTML = "";
+    // Disparar evento para la paginación
+    const event = new CustomEvent('catalogo-datos-cargados', { detail: data || [] });
+    window.dispatchEvent(event);
+    
+    // También actualizar directamente si la paginación ya está cargada
+    if (typeof actualizarDatosPaginacion === 'function') {
+        actualizarDatosPaginacion(data || []);
+    }
+}
 
-data?.forEach(r => {
-  const img = r.imagenes?.[0] || "/img/no-image.png";
+// Modifica el evento del filtro para usar la paginación:
+document.getElementById("filtro").addEventListener("keyup", async e => {
+    const q = e.target.value;
+    
+    if (typeof aplicarFiltroPaginacion === 'function') {
+        aplicarFiltroPaginacion(q);
+    } else {
+        // Fallback al filtro original si la paginación no está cargada
+        const { data } = await supabase.from("catalogo_camisas").select("*");
+        const filtrado = data?.filter(
+            x =>
+                x.titulo.toLowerCase().includes(q) ||
+                x.categoria.toLowerCase().includes(q) ||
+                x.id.toLowerCase().includes(q)
+        ) || [];
+        
+        const event = new CustomEvent('catalogo-datos-cargados', { detail: filtrado });
+        window.dispatchEvent(event);
+    }
+});
 
-  body.innerHTML += `
-    <tr>
-      <td><img src="${img}" class="producto-img"></td>
-      <td>${r.titulo}</td>
-      <td>${r.categoria}</td>
-      <td>$${Number(r.precio).toFixed(2)}</td>
-      <td>${r.tallas?.join(", ") || "—"}</td>
-      <td class="text-end acciones-btn">
-
-        <button class="btn-accion btn-ver" onclick="ver('${r.id}')">
-          <i class="fas fa-eye"></i>
-        </button>
-
-        <button class="btn-accion btn-editar" onclick="editar('${r.id}')">
-          <i class="fas fa-edit"></i>
-        </button>
-
-        <button class="btn-accion btn-eliminar" onclick="eliminar('${r.id}')">
-          <i class="fas fa-trash"></i>
-        </button>
-
-      </td>
-    </tr>
-  `;
-
-  });
+// Agrega esta función para recargar la tabla desde otros lugares:
+function recargarTabla() {
+    cargarTabla();
 }
 
 // 👉 cargar tabla SOLO cuando supabase está listo

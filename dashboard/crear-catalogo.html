@@ -22,6 +22,7 @@
     <!-- Estilos -->
     <link rel="stylesheet" href="../css/crud-ccatalogo/style-crud.css">
     <link rel="stylesheet" href="../css/crud-ccatalogo/style-nabvar-ccatalogo.css">
+    <link rel="stylesheet" href="../css/crud-ccatalogo/style-crud-pag.css">
     
     <style>
         :root {
@@ -90,6 +91,19 @@
                         </thead>
                         <tbody id="lista"></tbody>
                     </table>
+
+                    <!-- PAGINACIÓN (NUEVA SECCIÓN) -->
+                    <div class="pagination-container mt-4">
+                        <nav aria-label="Paginación de catálogo">
+                            <ul class="pagination justify-content-center" id="paginacion">
+                                <!-- Los botones se generarán dinámicamente -->
+                            </ul>
+                        </nav>
+                        <div class="text-center text-muted mt-2 small">
+                            Mostrando <span id="registrosMostrados">0</span> de <span id="totalRegistros">0</span> registros
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -302,6 +316,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/supabase.js"></script>
 <script src="../js-crud/crear-catalogo.js"></script>
+<script src="../js-crud/paginacion-catalogo.js"></script>
 
 </body>
 </html>
