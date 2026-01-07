@@ -6,7 +6,7 @@
 
 * {
   box-sizing: border-box;
-  /*outline: 1px solid green;*/
+  outline: 1px solid green;
 }
 
 body {
@@ -17,6 +17,12 @@ body {
   height: 100vh;
   font-family: "Avenir";
   overflow: hidden;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+  fill: #CB2D2D;
 }
 
 .card {

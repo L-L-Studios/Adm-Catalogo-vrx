@@ -157,8 +157,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="js/supabase.js"></script>
-<script src="js/dashboard.js"></script>
+<!-- IMPORTANTE: dash-modal.js DEBE cargarse ANTES de dashboard.js -->
 <script src="js-dashboard/dash-modal.js"></script>
+<script src="js/dashboard.js"></script>
 
 <!-- ICONO DEL POPUP ARRIBA ABAJO -->
 <script>
@@ -196,6 +197,26 @@
   });
 </script>
 
+<!-- DEBUG: Verificar funciones globales -->
+<script>
+  // Verificar que las funciones están disponibles
+  setTimeout(() => {
+    console.log("=== DEBUG: Funciones globales ===");
+    console.log("verPedido:", typeof verPedido);
+    console.log("rechazarPedido:", typeof rechazarPedido);
+    console.log("mostrarFormularioAprobacion:", typeof mostrarFormularioAprobacion);
+    console.log("cargarVista:", typeof cargarVista);
+    console.log("==============================");
+    
+    // Si alguna función falta, recargar dash-modal.js
+    if (typeof verPedido === 'undefined' || typeof rechazarPedido === 'undefined') {
+      console.warn("Faltan funciones globales, recargando dash-modal.js");
+      const script = document.createElement('script');
+      script.src = 'js-dashboard/dash-modal.js?v=' + Date.now();
+      document.head.appendChild(script);
+    }
+  }, 1000);
+</script>
 
 </body>
 </html>

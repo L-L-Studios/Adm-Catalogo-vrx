@@ -63,8 +63,6 @@
           <td>$${Number(p.total).toFixed(2)}</td>
           <td class="text-end">
             <button class="btn btn-sm btn-primary" onclick="verPedido('${p.id}')">Ver</button>
-            <button class="btn btn-sm btn-success" onclick="aprobarPedido('${p.id}')">Aprobar</button>
-            <button class="btn btn-sm btn-danger" onclick="rechazarPedido('${p.id}')">Rechazar</button>
           </td>
         </tr>`;
     });
