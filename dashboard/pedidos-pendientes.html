@@ -13,9 +13,9 @@
 
   <div class="col-md-4">
     <div class="card shadow-sm">
-      <div class="card-body card-p-pers">
-        <h6 class="text-muted lbl-p-pers">Pedidos personalizados</h6>
-        <h3 id="pedidos-personalizados">0</h3>
+      <div class="card-body card-p-total">
+        <h6 class="text-muted lbl-p-total">Pedidos totales</h6>
+        <h3 id="pedidos-totales">0</h3>
       </div>
     </div>
   </div>
@@ -23,8 +23,18 @@
   <div class="col-md-4">
     <div class="card shadow-sm">
       <div class="card-body card-p-total">
-        <h6 class="text-muted lbl-p-total">Pedidos totales</h6>
-        <h3 id="pedidos-totales">0</h3>
+        <h6 class="text-muted lbl-p-total">Cambiar fecha prox</h6>
+
+        <!-- 📅 CAMBIAR FECHA / TEXTO PROX -->
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-proxima-fecha">
+          Cambiar fecha
+        </button>
+
+        <!-- 🔄 REFRESCAR -->
+        <button id="btn-refrescar" class="btn btn-outline-secondary">
+          🔄
+        </button>
+       
       </div>
     </div>
   </div>
@@ -34,13 +44,17 @@
 <div class="card shadow-sm">
   <div class="card-body">
 
-  <div class="col-md-6">
-    <div class="c-b-pendiente">
-      <div class="shadow__input"></div>
-      <input id="busqueda-pendientes" class="form-control" placeholder="Buscar por nombre o email..."> 
-    </div>   
-     
-  </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+
+        <div class="c-b-pendiente">
+          <div class="shadow__input"></div>
+          <input id="busqueda-pendientes" class="form-control" placeholder="Buscar por nombre o email...">
+        </div>
+        
+      </div>
+    </div>
+
 
     <table class="table align-middle table-dashboard">
       <thead class="table-dark">
@@ -56,3 +70,36 @@
     
   </div>
 </div>
+
+
+<div class="modal fade" id="modal-proxima-fecha" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Próxima fecha de entrega</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">Selecciona fecha</label>
+
+        <!-- 📅 CALENDARIO -->
+        <input type="date" id="input-proxima-fecha" class="form-control">
+
+        <small class="text-muted">
+          Esta fecha aparecerá en el catálogo del cliente.
+        </small>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="guardar-proxima-fecha" class="btn btn-success">Guardar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+

@@ -1,7 +1,5 @@
 // dash-modal.js - VERSIÓN COMPLETA Y FUNCIONAL
 
-// dash-modal.js - VERSIÓN SIN COLUMNA 'estado'
-
 async function verPedido(id, tabla = "pedidos_camisas") {
   try {
     const { data: p, error } = await supabase
@@ -178,7 +176,7 @@ async function verPedido(id, tabla = "pedidos_camisas") {
           Aprobar
         </button>
       `;
-    } else if (tabla === "pedidos_completados") {
+    } else if (tabla === "pedidos_aprobados") {
       modalFooter.innerHTML = `
         <button class="btn btn-secondary" data-bs-dismiss="modal">
           Cerrar
@@ -312,7 +310,6 @@ async function mostrarFormularioAprobacion(id) {
   }
 }
 
-// dash-modal.js - VERSIÓN CON ID GENERADO Y SIN ESTADO
 
 // Función para generar un ID único
 function generarUUID() {
@@ -372,25 +369,25 @@ async function aprobarPedido(id, costoExtra, costoExtraSolicitado, fechaEntrega)
     if (!confirm.isConfirmed) return;
 
     // 1. Insertar en completados - CON ID GENERADO
-    const datosCompletados = {
-      id: generarUUID(), // <-- GENERAR ID MANUALMENTE
-      nombre: pedido.nombre,
-      email: pedido.email,
-      direccion: pedido.direccion,
-      whatsapp: pedido.whatsapp,
-      metodo_pago: pedido.metodo_pago,
-      camisas: pedido.camisas,
-      total: nuevoTotal,
-      costo_extra: costoExtraTexto,
-      fecha_entrega_max: fechaEntrega,
-      created_at: pedido.created_at,
-      completed_at: new Date().toISOString(),
-      tipo_pedido: 'nuevos'
-    };
+      const datosCompletados = {
+        id: generarUUID(),
+        nombre: pedido.nombre,
+        email: pedido.email,
+        direccion: pedido.direccion,
+        whatsapp: pedido.whatsapp,
+        metodo_pago: pedido.metodo_pago,
+        camisas: pedido.camisas,
+        total: nuevoTotal,
+        costo_extra: costoExtraTexto,
+        fecha_entrega_max: fechaEntrega,  // <-- AQUÍ ESTÁ LA FECHA
+        created_at: pedido.created_at,
+        completed_at: new Date().toISOString(),
+        tipo_pedido: 'nuevos'
+      };
 
     console.log("Insertando en completados:", datosCompletados);
 
-    const { error: insertError } = await supabase.from("pedidos_completados").insert(datosCompletados);
+    const { error: insertError } = await supabase.from("pedidos_aprobados").insert(datosCompletados);
 
     if (insertError) {
       console.error("Error insertando en completados:", insertError);
@@ -455,44 +452,146 @@ async function rechazarPedido(id) {
       return;
     }
 
-    const { value: motivo } = await Swal.fire({
-      title: 'Rechazar Pedido',
-      input: 'textarea',
-      inputLabel: 'Motivo del rechazo (opcional)',
-      inputPlaceholder: 'Ingrese el motivo por el cual se rechaza el pedido...',
-      inputAttributes: {
-        'aria-label': 'Motivo del rechazo'
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Continuar',
-      cancelButtonText: 'Cancelar'
+    // Crear modal sencillo para el motivo
+    const modalHTML = `
+      <div class="modal fade" id="modalRechazarSimple" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title">Rechazar Pedido</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Cliente:</strong> ${pedido.nombre}</p>
+              <p><strong>Total:</strong> $${Number(pedido.total || 0).toFixed(2)}</p>
+              
+              <div class="mb-3 mt-3">
+                <label class="form-label">Motivo del rechazo (opcional):</label>
+                <textarea 
+                  id="motivoRechazo" 
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="Escribe el motivo aquí (opcional)..."
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="button" class="btn btn-danger" id="btnConfirmarRechazo">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Agregar modal al DOM
+    const modalDiv = document.createElement('div');
+    modalDiv.innerHTML = modalHTML;
+    document.body.appendChild(modalDiv);
+
+    // Mostrar modal
+    const modalElement = document.getElementById('modalRechazarSimple');
+    const modal = new bootstrap.Modal(modalElement);
+    
+    // Usar Promise para manejar la respuesta
+    const motivo = await new Promise((resolve) => {
+      // Evento para botón confirmar
+      document.getElementById('btnConfirmarRechazo').addEventListener('click', () => {
+        const motivoInput = document.getElementById('motivoRechazo');
+        const motivoTexto = motivoInput ? motivoInput.value.trim() : '';
+        modal.hide();
+        // Retornar el motivo (puede ser string vacío)
+        resolve(motivoTexto);
+      });
+
+      // Evento para cuando se cierra el modal
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        if (document.body.contains(modalDiv)) {
+          document.body.removeChild(modalDiv);
+        }
+        // Si se cierra sin confirmar, retornar null
+        resolve(null);
+      });
+
+      // Mostrar el modal
+      modal.show();
+      
+      // Enfocar el textarea
+      setTimeout(() => {
+        const textarea = document.getElementById('motivoRechazo');
+        if (textarea) textarea.focus();
+      }, 500);
     });
 
-    // Si usuario canceló
-    if (motivo === undefined) return;
+    // Si se canceló (motivo es null)
+    if (motivo === null) {
+      console.log("Usuario canceló el rechazo");
+      return;
+    }
 
+    // Continuar con el proceso de rechazo
+    await procesarRechazoConfirmado(id, pedido, motivo || '');
+
+  } catch (error) {
+    console.error("Error en rechazarPedido:", error);
+    Swal.fire("Error", "Ocurrió un error al procesar el rechazo", "error");
+  }
+}
+
+
+// Función para enviar correo de aprobación (opcional - se puede saltar)
+async function procesarRechazoConfirmado(id, pedido, motivo) {
+  try {
+    const motivoFinal = motivo || 'Sin motivo especificado';
+
+    // Confirmación final con SweetAlert
     const confirm = await Swal.fire({
       icon: "warning",
-      title: "Confirmar Rechazo",
+      title: "¿Confirmar rechazo?",
       html: `
         <div class="text-start">
-          <p>El pedido será movido a <strong>Pedidos Rechazados</strong></p>
-          <p><strong>Cliente:</strong> ${pedido.nombre}</p>
-          <p><strong>Total:</strong> $${Number(pedido.total || 0).toFixed(2)}</p>
-          ${motivo ? `<p><strong>Motivo:</strong> ${motivo}</p>` : ''}
+          <p>El pedido será movido a <strong class="text-danger">Pedidos Rechazados</strong></p>
+          <div class="alert alert-warning">
+            <p class="mb-1"><strong>Cliente:</strong> ${pedido.nombre}</p>
+            <p class="mb-1"><strong>Total:</strong> $${Number(pedido.total || 0).toFixed(2)}</p>
+            <p class="mb-0"><strong>Productos:</strong> ${typeof pedido.camisas === 'string' ? JSON.parse(pedido.camisas).length : pedido.camisas?.length || 0} item(s)</p>
+          </div>
+          ${motivoFinal !== 'Sin motivo especificado' ? `
+            <div class="alert alert-light">
+              <p class="mb-0"><strong>Motivo registrado:</strong> ${motivoFinal}</p>
+            </div>
+          ` : ''}
         </div>
       `,
       showCancelButton: true,
-      confirmButtonText: "Rechazar",
+      confirmButtonText: "Sí, rechazar",
       cancelButtonText: "Cancelar",
-      confirmButtonColor: "#dc3545"
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d"
     });
 
-    if (!confirm.isConfirmed) return;
+    if (!confirm.isConfirmed) {
+      return;
+    }
 
-    // 1. Insertar en rechazados - CON ID GENERADO
+    // Mostrar loading
+    Swal.fire({
+      title: 'Procesando...',
+      html: `
+        <div class="text-center">
+          <div class="spinner-border text-danger" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Rechazando pedido...</p>
+        </div>
+      `,
+      allowOutsideClick: false,
+      showConfirmButton: false
+    });
+
+    // 1. Insertar en rechazados
     const datosRechazados = {
-      id: generarUUID(), // <-- GENERAR ID MANUALMENTE
+      id: generarUUID(),
       nombre: pedido.nombre,
       email: pedido.email,
       direccion: pedido.direccion,
@@ -501,7 +600,7 @@ async function rechazarPedido(id) {
       camisas: pedido.camisas,
       total: pedido.total,
       costo_extra: pedido.costo_extra,
-      motivo_rechazo: motivo || 'Sin motivo especificado',
+      motivo_rechazo: motivoFinal,
       created_at: pedido.created_at,
       rejected_at: new Date().toISOString(),
       tipo_pedido: 'nuevos'
@@ -509,41 +608,81 @@ async function rechazarPedido(id) {
 
     console.log("Insertando en rechazados:", datosRechazados);
 
-    const { error: insertError } = await supabase.from("pedidos_rechazados").insert(datosRechazados);
+    const { error: insertError } = await supabase
+      .from("pedidos_rechazados")
+      .insert(datosRechazados);
 
     if (insertError) {
       console.error("Error insertando en rechazados:", insertError);
-      Swal.fire("Error", "No se pudo mover el pedido a rechazados. Error: " + insertError.message, "error");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        html: `
+          <div class="text-start">
+            <p>No se pudo mover el pedido a rechazados.</p>
+            <p class="text-muted small">Error: ${insertError.message}</p>
+            <p class="text-muted small">El pedido sigue en pendientes.</p>
+          </div>
+        `,
+        confirmButtonColor: "#dc3545"
+      });
       return;
     }
 
     // 2. Eliminar de pendientes
-    const { error: deleteError } = await supabase.from("pedidos_camisas").delete().eq("id", id);
+    const { error: deleteError } = await supabase
+      .from("pedidos_camisas")
+      .delete()
+      .eq("id", id);
 
     if (deleteError) {
       console.error("Error eliminando de pendientes:", deleteError);
-      Swal.fire("Error", "No se pudo completar el rechazo", "error");
-      return;
+      Swal.fire({
+        icon: "warning",
+        title: "Atención",
+        html: `
+          <div class="text-start">
+            <p>El pedido se movió a rechazados pero hubo un problema al eliminarlo de pendientes.</p>
+            <p class="text-muted small">Error: ${deleteError.message}</p>
+            <p class="text-muted small">Puede aparecer duplicado. Verifique ambas secciones.</p>
+          </div>
+        `,
+        confirmButtonColor: "#ffc107"
+      });
     }
 
-    // Cerrar modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById("modalPedido"));
-    if (modal) modal.hide();
+    // Cerrar modal de vista del pedido si está abierto
+    const modalPedido = bootstrap.Modal.getInstance(document.getElementById("modalPedido"));
+    if (modalPedido) modalPedido.hide();
 
+    // Mostrar confirmación final
     Swal.fire({
       icon: "success",
-      title: "¡Rechazado!",
+      title: "✅ Rechazado",
       html: `
         <div class="text-start">
-          <p>Pedido movido a <strong>Pedidos Rechazados</strong></p>
-          <p class="text-muted small">Puedes reconsiderarlo desde la sección de rechazados.</p>
+          <p>Pedido rechazado exitosamente.</p>
+          <div class="alert alert-success">
+            <p class="mb-1"><strong>Cliente:</strong> ${pedido.nombre}</p>
+            <p class="mb-1"><strong>Total:</strong> $${Number(pedido.total || 0).toFixed(2)}</p>
+            <p class="mb-0"><strong>Estado:</strong> Movido a rechazados</p>
+          </div>
+          ${motivoFinal !== 'Sin motivo especificado' ? `
+            <div class="alert alert-light">
+              <p class="mb-0"><strong>Motivo:</strong> ${motivoFinal}</p>
+            </div>
+          ` : ''}
+          <p class="text-muted small">
+            <i class="ph ph-arrow-clockwise"></i> Puede reconsiderarlo desde "Pedidos Rechazados".
+          </p>
         </div>
       `,
       timer: 3000,
+      timerProgressBar: true,
       showConfirmButton: false
     });
 
-    // Recargar vista
+    // Recargar vista de pendientes
     setTimeout(() => {
       if (window.cargarVista) {
         window.cargarVista('pendientes');
@@ -551,52 +690,18 @@ async function rechazarPedido(id) {
     }, 1000);
 
   } catch (error) {
-    console.error("Error en rechazarPedido:", error);
-    Swal.fire("Error", "Ocurrió un error al rechazar el pedido", "error");
-  }
-}
-
-// Función para enviar correo de aprobación (opcional - se puede saltar)
-async function enviarCorreoAprobacion(pedido, totalFinal, costoExtra, costoExtraSolicitado, fechaEntrega) {
-  try {
-    // Si no quieres usar correo, solo retorna éxito
-    return { success: true };
-    
-    // Si quieres usar EmailJS, descomenta el código siguiente:
-    /*
-    if (typeof emailjs === "undefined") {
-      await new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js";
-        script.onload = resolve;
-        document.body.appendChild(script);
-      });
-    }
-
-    emailjs.init('3OTktLhSaXJkgGTcX');
-
-    const templateParams = {
-      cliente: pedido.nombre,
-      email_cliente: pedido.email,
-      total_original: Number(pedido.total || 0).toFixed(2),
-      costo_extra: Number(costoExtra || 0).toFixed(2),
-      total_final: Number(totalFinal).toFixed(2),
-      fecha_entrega: new Date(fechaEntrega).toLocaleDateString(),
-      extras_cliente: costoExtraSolicitado || "Ninguno"
-    };
-
-    const result = await emailjs.send(
-      'pedido_vrx_cliente',
-      'template_zsf55a3',
-      templateParams
-    );
-
-    return { success: true, result };
-    */
-    
-  } catch (error) {
-    console.error("Error enviando correo:", error);
-    return { success: false, error };
+    console.error("Error en procesarRechazoConfirmado:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error inesperado",
+      html: `
+        <div class="text-start">
+          <p>Ocurrió un error al procesar el rechazo.</p>
+          <p class="text-muted small">${error.message}</p>
+        </div>
+      `,
+      confirmButtonColor: "#dc3545"
+    });
   }
 }
 
@@ -615,130 +720,187 @@ async function verPedidoGeneral(id, tabla) {
       return;
     }
 
-    // Información básica
+    console.log(`📦 Pedido obtenido (${tabla}):`, p);
+
+    // Formatear el texto del costo extra si existe
     let costoExtraHTML = "";
     if (p.costo_extra) {
       const textoCostoExtra = p.costo_extra.replace(/Token:.*?\|/g, '').trim();
       if (textoCostoExtra && textoCostoExtra !== '') {
-        costoExtraHTML = `<p><strong>📝 Notas:</strong> ${textoCostoExtra}</p>`;
+        costoExtraHTML = `<p><strong>📝 Notas/costo extra:</strong> ${textoCostoExtra}</p>`;
       }
     }
 
-    let infoHTML = `
+    // Información básica del pedido
+    document.getElementById("pedido-info").innerHTML = `
       <div class="row">
         <div class="col-md-6">
           <p><strong>👤 Cliente:</strong> ${p.nombre || "No especificado"}</p>
           <p><strong>📧 Email:</strong> ${p.email || "No especificado"}</p>
-          ${p.whatsapp ? `<p><strong>📱 WhatsApp:</strong> ${p.whatsapp}</p>` : ""}
+          <p><strong>📱 WhatsApp:</strong> ${p.whatsapp || "No especificado"}</p>
         </div>
         <div class="col-md-6">
-          ${p.direccion ? `<p><strong>📍 Dirección:</strong> ${p.direccion}</p>` : ""}
-          ${p.metodo_pago ? `<p><strong>💰 Método de pago:</strong> ${p.metodo_pago}</p>` : ""}
-          ${p.total ? `<p><strong>💵 Total:</strong> $${Number(p.total || 0).toFixed(2)}</p>` : ""}
+          <p><strong>📍 Dirección:</strong> ${p.direccion || "No especificada"}</p>
+          <p><strong>💰 Método de pago:</strong> ${p.metodo_pago || "Efectivo"}</p>
+          <p><strong>💵 Total:</strong> $${Number(p.total || 0).toFixed(2)}</p>
         </div>
       </div>
       <div class="row mt-2">
         <div class="col-12">
-          <p><strong>📅 Fecha:</strong> ${new Date(p.created_at || p.completed_at || p.rejected_at || new Date()).toLocaleString()}</p>
+          <p><strong>📅 Fecha del pedido:</strong> ${new Date(p.created_at || new Date()).toLocaleString()}</p>
           ${costoExtraHTML}
-          ${p.mensaje ? `<p><strong>💬 Mensaje:</strong> ${p.mensaje}</p>` : ""}
-          ${p.fecha_entrega_max ? `<p><strong>📅 Fecha entrega:</strong> ${new Date(p.fecha_entrega_max).toLocaleDateString()}</p>` : ""}
-          ${p.motivo_rechazo ? `<p><strong>❌ Motivo rechazo:</strong> ${p.motivo_rechazo}</p>` : ""}
+          ${p.fecha_entrega_max ? `<p><strong>📅 Fecha máxima de entrega:</strong> ${new Date(p.fecha_entrega_max).toLocaleDateString()}</p>` : ""}
+          ${tabla === "pedidos_aprobados" && p.completed_at ? `<p><strong>✅ Aprobado el:</strong> ${new Date(p.completed_at).toLocaleString()}</p>` : ""}
+          ${tabla === "pedidos_rechazados" && p.rejected_at ? `<p><strong>❌ Rechazado el:</strong> ${new Date(p.rejected_at).toLocaleString()}</p>` : ""}
+          ${tabla === "pedidos_rechazados" && p.motivo_rechazo ? `<p><strong>📄 Motivo del rechazo:</strong> ${p.motivo_rechazo}</p>` : ""}
         </div>
       </div>
       <hr>
     `;
 
-    document.getElementById("pedido-info").innerHTML = infoHTML;
-
-    // Contenedor para productos
+    // Contenedor para las camisas
     const cont = document.getElementById("pedido-camisas");
     cont.innerHTML = "";
 
-    if (p.camisas) {
-      let camisasData;
-      try {
-        if (typeof p.camisas === 'string') {
-          camisasData = JSON.parse(p.camisas);
-        } else {
-          camisasData = p.camisas;
-        }
-      } catch (e) {
-        console.error("Error parseando camisas:", e);
-        camisasData = [];
-      }
-
-      if (camisasData && camisasData.length > 0) {
-        let camisasHTML = '<div class="row g-3"><h5>🛒 Productos</h5>';
-        
-        camisasData.forEach((item, index) => {
-          const subtotal = (item.precio || 0) * (item.cantidad || 1);
-          
-          camisasHTML += `
-            <div class="col-md-6">
-              <div class="card">
-                <div class="card-body">
-                  <h6>${item.nombre || "Producto"}</h6>
-                  <p class="mb-1">👕 Talla: ${item.talla || "N/A"}</p>
-                  <p class="mb-1">🎨 Color: ${item.color || "N/A"}</p>
-                  <p class="mb-1">📦 Cantidad: ${item.cantidad || 1}</p>
-                  <p class="mb-1 fw-bold">💰 Subtotal: $${subtotal.toFixed(2)}</p>
-                  ${item.costo_extra ? `<p class="mb-0 small text-muted">✏️ Extra: ${item.costo_extra}</p>` : ''}
-                </div>
-              </div>
-            </div>
-          `;
-        });
-        
-        camisasHTML += '</div>';
-        cont.innerHTML = camisasHTML;
+    // Verificar si camisas es string JSON o ya es objeto
+    let camisasData;
+    try {
+      if (typeof p.camisas === 'string') {
+        camisasData = JSON.parse(p.camisas);
       } else {
-        cont.innerHTML = `
-          <div class="col-12">
-            <div class="alert alert-warning">
-              No hay productos detallados en este pedido
-            </div>
-          </div>
-        `;
+        camisasData = p.camisas;
       }
-    } else {
+    } catch (e) {
+      console.error("Error parseando camisas:", e);
+      camisasData = [];
+    }
+
+    // Si no hay camisas o está vacío
+    if (!camisasData || camisasData.length === 0) {
       cont.innerHTML = `
         <div class="col-12">
-          <div class="alert alert-secondary">
-            No hay información de productos disponible
+          <div class="alert alert-warning">
+            <i class="ph ph-warning-circle"></i> No se encontraron productos en este pedido
           </div>
         </div>
       `;
+      const modal = new bootstrap.Modal(document.getElementById("modalPedido"));
+      modal.show();
+      return;
     }
 
-    // Agregar botones de acción
+    // Mostrar cada camisa - Mismo formato que en pedidos pendientes
+    let camisasHTML = '<div class="row g-3"><h5>🛒 Productos</h5>';
+    
+    camisasData.forEach((item, index) => {
+      const subtotal = (item.precio || 0) * (item.cantidad || 1);
+      
+      camisasHTML += `
+        <div class="col-md-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="card-title">${item.nombre || "Producto sin nombre"}</h6>
+              
+              <div class="d-flex justify-content-between mb-2">
+                <span class="badge bg-primary">👕 Talla: ${item.talla || "No especificada"}</span>
+                <span class="badge bg-success">🎨 Color: ${item.color || "No especificado"}</span>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Cantidad:</span>
+                <span class="fw-bold">${item.cantidad || 1}</span>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Precio unitario:</span>
+                <span class="fw-bold">$${(item.precio || 0).toFixed(2)}</span>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Subtotal:</span>
+                <span class="fw-bold text-primary">$${subtotal.toFixed(2)}</span>
+              </div>
+              
+              ${item.costo_extra ? `
+                <div class="mt-2 p-2 bg-light rounded">
+                  <small class="text-muted">✏️ Extra solicitado por cliente:</small>
+                  <p class="mb-0 small">${item.costo_extra}</p>
+                </div>
+              ` : ''}
+              
+              ${item.imagen ? `
+                <div class="mt-2 text-center">
+                  <p class="small text-muted mb-1">🖼️ Imagen de referencia:</p>
+                  <img src="${item.imagen}" alt="${item.nombre}" 
+                       class="img-fluid rounded shadow-sm" style="max-height: 200px; max-width: 100%; object-fit: contain;">
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    camisasHTML += '</div>';
+    
+    // Resumen del pedido
+    const totalGeneral = camisasData.reduce((sum, item) => 
+      sum + ((item.precio || 0) * (item.cantidad || 1)), 0
+    );
+    
+    const resumenHTML = `
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card bg-light">
+            <div class="card-body">
+              <h6 class="card-title">📋 Resumen del Pedido</h6>
+              <div class="row">
+                <div class="col-md-6">
+                  <p class="mb-1"><strong>Total de productos:</strong> ${camisasData.length}</p>
+                  <p class="mb-1"><strong>Unidades totales:</strong> ${camisasData.reduce((sum, item) => sum + (item.cantidad || 1), 0)}</p>
+                  ${tabla === "pedidos_aprobados" ? '<p class="mb-1"><strong>✅ Estado:</strong> Aprobado</p>' : ''}
+                  ${tabla === "pedidos_rechazados" ? '<p class="mb-1"><strong>❌ Estado:</strong> Rechazado</p>' : ''}
+                </div>
+                <div class="col-md-6 text-end">
+                  <h5 class="text-primary">Total: $${totalGeneral.toFixed(2)}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    cont.innerHTML = camisasHTML + resumenHTML;
+
+    // Agregar botones de acción específicos para cada tipo de pedido
     const modalFooter = document.querySelector("#modalPedido .modal-footer");
     
-    if (tabla === "pedidos_completados") {
+    if (tabla === "pedidos_aprobados") {
       modalFooter.innerHTML = `
         <button class="btn btn-secondary" data-bs-dismiss="modal">
-          Cerrar
+          <i class="ph ph-x"></i> Cerrar
         </button>
         <button class="btn btn-danger" onclick="eliminarCompletado('${p.id}')">
-          Eliminar
+          <i class="ph ph-trash"></i> Eliminar
         </button>
       `;
     } else if (tabla === "pedidos_rechazados") {
       modalFooter.innerHTML = `
         <button class="btn btn-secondary" data-bs-dismiss="modal">
-          Cerrar
+          <i class="ph ph-x"></i> Cerrar
         </button>
         <button class="btn btn-warning" onclick="reconsiderarPedido('${p.id}')">
-          Reconsiderar
+          <i class="ph ph-arrow-clockwise"></i> Reconsiderar
         </button>
         <button class="btn btn-danger" onclick="eliminarRechazado('${p.id}')">
-          Eliminar
+          <i class="ph ph-trash"></i> Eliminar
         </button>
       `;
     } else {
       modalFooter.innerHTML = `
         <button class="btn btn-secondary" data-bs-dismiss="modal">
-          Cerrar
+          <i class="ph ph-x"></i> Cerrar
         </button>
       `;
     }
@@ -767,7 +929,7 @@ async function eliminarCompletado(id) {
 
   if (!confirm.isConfirmed) return;
 
-  const { error } = await supabase.from("pedidos_completados").delete().eq("id", id);
+  const { error } = await supabase.from("pedidos_aprobados").delete().eq("id", id);
 
   if (error) {
     Swal.fire("Error", "No se pudo eliminar el pedido", "error");

@@ -37,9 +37,9 @@ async function cargarVista(vista) {
       js: "js-dashboard/pedidos-personalizados.js"
     },
     completados: {
-      titulo: "Pedidos completados",
-      html: "dashboard/pedidos-completados.html",
-      js: "js-dashboard/pedidos-completados.js"
+      titulo: "Pedidos aprobados",
+      html: "dashboard/pedidos-aprobados.html",
+      js: "js-dashboard/pedidos-aprobados.js"
     },
     rechazados: {
       titulo: "Pedidos rechazados",

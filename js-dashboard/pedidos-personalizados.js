@@ -24,6 +24,15 @@
 
     if (error) return console.error(error);
 
+    // Contar pedidos personalizados pendientes
+    const { count: countPersonalizados } = await supabase
+      .from("pedidos_personalizados")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pendiente");
+
+    document.getElementById("pedidos-personalizados").textContent = countPersonalizados ?? 0;
+
+
     const tbody = document.getElementById("tabla-personalizados");
     tbody.innerHTML = "";
 
