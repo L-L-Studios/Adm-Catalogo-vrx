@@ -1,3 +1,4 @@
+// pedidos-pendientes.js - ACTUALIZADO
 (async function () {
 
   while (!window.supabase) {

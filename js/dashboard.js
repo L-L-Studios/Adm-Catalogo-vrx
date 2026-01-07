@@ -91,49 +91,125 @@ async function aprobarPedido(id) {
     text: "El pedido pasará a completados",
     showCancelButton: true,
     confirmButtonText: "Aprobar",
-    cancelButtonText: "Cancelar"
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#28a745",
+    cancelButtonColor: "#6c757d"
   });
 
   if (!r.isConfirmed) return;
 
-  // Obtener pedido
-  const { data: pedido } = await supabase
+  // Obtener pedido desde pedidos_camisas
+  const { data: pedido, error: fetchError } = await supabase
     .from("pedidos_camisas")
     .select("*")
     .eq("id", id)
     .single();
 
-  // Insertar en completados con tipo 'nuevos'
-  const { error } = await supabase.from("pedidos_completados").insert({
-    id: pedido.id,
+  if (fetchError) {
+    Swal.fire("Error", "No se encontró el pedido", "error");
+    console.error(fetchError);
+    return;
+  }
+
+  // Insertar en completados
+  const { error: insertError } = await supabase.from("pedidos_completados").insert({
     nombre: pedido.nombre,
     email: pedido.email,
     direccion: pedido.direccion,
     whatsapp: pedido.whatsapp,
     metodo_pago: pedido.metodo_pago,
-    camisas: JSON.stringify(pedido.camisas),
+    camisas: pedido.camisas, // JSON
     total: pedido.total,
-    tipo_pedido: 'nuevos',
+    estado: 'completado',
+    costo_extra: pedido.costo_extra,
     created_at: pedido.created_at,
-    completed_at: new Date().toISOString()
+    completed_at: new Date().toISOString(),
+    tipo_pedido: 'nuevos'
   });
 
-  if (error) {
+  if (insertError) {
     Swal.fire("Error", "No se pudo completar el pedido", "error");
-    console.error(error);
+    console.error(insertError);
     return;
   }
 
   // Eliminar de pendientes
   await supabase.from("pedidos_camisas").delete().eq("id", id);
 
-  Swal.fire("Aprobado", "Pedido completado correctamente", "success");
+  Swal.fire({
+    icon: "success",
+    title: "¡Aprobado!",
+    text: "Pedido movido a completados",
+    timer: 2000,
+    showConfirmButton: false
+  });
   
   // Recargar la vista actual
-  const vistaActual = document.getElementById('titulo-vista').textContent;
-  if (vistaActual.includes('pendientes')) {
-    cargarVista('pendientes');
+  cargarVista('pendientes');
+}
+
+async function rechazarPedido(id) {
+  const r = await Swal.fire({
+    icon: "warning",
+    title: "Rechazar pedido",
+    text: "El pedido se moverá a rechazados",
+    showCancelButton: true,
+    confirmButtonText: "Rechazar",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#dc3545",
+    cancelButtonColor: "#6c757d"
+  });
+
+  if (!r.isConfirmed) return;
+
+  // Obtener pedido
+  const { data: pedido, error: fetchError } = await supabase
+    .from("pedidos_camisas")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) {
+    Swal.fire("Error", "No se encontró el pedido", "error");
+    console.error(fetchError);
+    return;
   }
+
+  // Insertar en rechazados
+  const { error: insertError } = await supabase.from("pedidos_rechazados").insert({
+    nombre: pedido.nombre,
+    email: pedido.email,
+    direccion: pedido.direccion,
+    whatsapp: pedido.whatsapp,
+    metodo_pago: pedido.metodo_pago,
+    camisas: pedido.camisas, // JSON
+    total: pedido.total,
+    estado: 'rechazado',
+    costo_extra: pedido.costo_extra,
+    created_at: pedido.created_at,
+    rejected_at: new Date().toISOString(),
+    tipo_pedido: 'nuevos'
+  });
+
+  if (insertError) {
+    Swal.fire("Error", "No se pudo rechazar el pedido", "error");
+    console.error(insertError);
+    return;
+  }
+
+  // Eliminar de pendientes
+  await supabase.from("pedidos_camisas").delete().eq("id", id);
+
+  Swal.fire({
+    icon: "success",
+    title: "¡Rechazado!",
+    text: "Pedido movido a rechazados",
+    timer: 2000,
+    showConfirmButton: false
+  });
+  
+  // Recargar la vista actual
+  cargarVista('pendientes');
 }
 
 
@@ -156,58 +232,6 @@ async function reconsiderarPedido(id) {
 
   Swal.fire("Listo", "Pedido enviado a pendientes", "success");
   cargarVista("rechazados");
-}
-
-async function rechazarPedido(id) {
-  const r = await Swal.fire({
-    icon: "warning",
-    title: "Rechazar pedido",
-    text: "El pedido se moverá a rechazados",
-    showCancelButton: true,
-    confirmButtonText: "Rechazar",
-    cancelButtonText: "Cancelar"
-  });
-
-  if (!r.isConfirmed) return;
-
-  // Obtener pedido
-  const { data: pedido } = await supabase
-    .from("pedidos_camisas")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  // Insertar en rechazados con tipo 'nuevos'
-  const { error } = await supabase.from("pedidos_rechazados").insert({
-    id: pedido.id,
-    nombre: pedido.nombre,
-    email: pedido.email,
-    direccion: pedido.direccion,
-    whatsapp: pedido.whatsapp,
-    metodo_pago: pedido.metodo_pago,
-    camisas: JSON.stringify(pedido.camisas),
-    total: pedido.total,
-    tipo_pedido: 'nuevos',
-    created_at: pedido.created_at,
-    rejected_at: new Date().toISOString()
-  });
-
-  if (error) {
-    Swal.fire("Error", "No se pudo rechazar el pedido", "error");
-    console.error(error);
-    return;
-  }
-
-  // Eliminar de pendientes
-  await supabase.from("pedidos_camisas").delete().eq("id", id);
-
-  Swal.fire("Rechazado", "Pedido movido a rechazados", "success");
-  
-  // Recargar la vista actual
-  const vistaActual = document.getElementById('titulo-vista').textContent;
-  if (vistaActual.includes('pendientes')) {
-    cargarVista('pendientes');
-  }
 }
 
 
