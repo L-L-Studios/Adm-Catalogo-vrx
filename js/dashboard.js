@@ -26,16 +26,13 @@ async function cargarVista(vista) {
   marcarActivo(vista);
 
   const rutas = {
+    //pendientes
     pendientes: {
       titulo: "Pedidos pendientes",
       html: "dashboard/pedidos-pendientes.html",
       js: "js-dashboard/pedidos-pendientes.js"
     },
-    personalizados: {
-      titulo: "Pedidos personalizados",
-      html: "dashboard/pedidos-personalizados.html",
-      js: "js-dashboard/pedidos-personalizados.js"
-    },
+
     completados: {
       titulo: "Pedidos aprobados",
       html: "dashboard/pedidos-aprobados.html",
@@ -45,6 +42,25 @@ async function cargarVista(vista) {
       titulo: "Pedidos rechazados",
       html: "dashboard/pedidos-rechazados.html",
       js: "js-dashboard/pedidos-rechazados.js"
+    },
+
+    //personalizados
+    personalizados: {
+      titulo: "Pedidos personalizados",
+      html: "dashboard/pedidos-personalizados.html",
+      js: "js-dashboard/pedidos-personalizados.js"
+    },
+
+    personalizadosAprobados: {
+      titulo: "Personalizados Aprobados",
+      html: "dashboard/personalizados-aprobados.html",
+      js: "js-dashboard/personalizados-aprobados.js"
+    },
+    
+    personalizadosRechazados: {
+      titulo: "Personalizados Rechazados",
+      html: "dashboard/personalizados-rechazados.html",
+      js: "js-dashboard/personalizados-rechazados.js"
     }
   };
 

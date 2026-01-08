@@ -38,20 +38,15 @@
       background-repeat: no-repeat;
     "
   >
-    <h5 class="mb-4 lbl-Adm">VRX</h5>
+    
+    <img src="images/logo-vrx-vector.svg" class="img-logo-aside" alt="">
 
     <ul class="nav flex-column gap-2">
+      <p class="lbl-as-pendientes">Pedidos nuevos</p>
       <li>
         <button class="nav-link text-white btn btn-link text-start active"
           onclick="cargarVista('pendientes')">
           <img width="30" height="30" src="https://img.icons8.com/pulsar-color/96/package.png" alt="package"/> Pedidos pendientes
-        </button>
-      </li>
-
-      <li>
-        <button class="nav-link text-white btn btn-link text-start"
-          onclick="cargarVista('personalizados')">
-          <img width="30" height="30" src="https://img.icons8.com/pulsar-gradient/48/package.png" alt="package"/> Pedidos Personalizados
         </button>
       </li>
 
@@ -66,6 +61,27 @@
         <button class="nav-link text-white btn btn-link text-start"
           onclick="cargarVista('rechazados')">
           <img width="30" height="30" src="https://img.icons8.com/color/48/cancel-order.png" alt="cancel-order"/> Pedidos Rechazados
+        </button>
+      </li>
+
+      <p class="lbl-as-personalizados">Pedidos personalizados</p>
+      <li>
+        <button class="nav-link text-white btn btn-link text-start"
+          onclick="cargarVista('personalizados')">
+          <img width="30" height="30" src="https://img.icons8.com/pulsar-gradient/48/package.png" alt="package"/> Pedidos Personalizados
+        </button>
+      </li>
+      <li>
+        <button class="nav-link text-white btn btn-link text-start"
+          onclick="cargarVista('personalizadosAprobados')">
+          <img width="30" height="30" src="https://img.icons8.com/color/48/checkmark--v1.png" alt="checkmark--v1"/> Aprobados
+        </button>
+      </li>
+      
+      <li>
+        <button class="nav-link text-white btn btn-link text-start"
+          onclick="cargarVista('personalizadosRechazados')">
+          <img width="30" height="30" src="https://img.icons8.com/color/48/cancel-2--v1.png" alt="cancel-2--v1"/> Rechazados
         </button>
       </li>
 

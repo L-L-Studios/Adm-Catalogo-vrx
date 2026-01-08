@@ -1070,6 +1070,118 @@ async function reconsiderarPedido(id) {
   }
 }
 
+// Función para reconsiderar pedidos personalizados rechazados
+async function reconsiderarPersonalizado(id) {
+  try {
+    const { data: pedido, error: pedidoError } = await supabase
+      .from("pedidos_rechazados")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (pedidoError || !pedido) {
+      Swal.fire("Error", "No se encontró el pedido", "error");
+      return;
+    }
+
+    // Verificar si es personalizado
+    if (pedido.tipo_pedido !== 'personalizados') {
+      // Si no es personalizado, usar la función normal
+      return reconsiderarPedido(id);
+    }
+
+    const confirm = await Swal.fire({
+      icon: "question",
+      title: "Reconsiderar pedido personalizado",
+      html: `
+        <div class="text-start">
+          <p><strong>¿Volver a poner este pedido personalizado en pendientes?</strong></p>
+          <p><strong>Cliente:</strong> ${pedido.nombre}</p>
+          <p><strong>Mensaje:</strong> ${pedido.mensaje ? pedido.mensaje.substring(0, 100) + '...' : 'Sin mensaje'}</p>
+          ${pedido.motivo_rechazo ? `<p><strong>Motivo anterior:</strong> ${pedido.motivo_rechazo}</p>` : ''}
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Sí, reconsiderar",
+      cancelButtonText: "Cancelar"
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    // Reinsertar en pedidos_personalizados
+    const datosPersonalizado = {
+      nombre: pedido.nombre,
+      email: pedido.email,
+      mensaje: pedido.mensaje,
+      talla: pedido.talla || null,
+      status: 'pendiente',
+      created_at: pedido.created_at || new Date().toISOString()
+    };
+
+    // Intentar extraer imagen_url si existe en camisas
+    try {
+      if (pedido.camisas) {
+        const camisasData = typeof pedido.camisas === 'string' ? JSON.parse(pedido.camisas) : pedido.camisas;
+        if (camisasData[0] && camisasData[0].imagen_url) {
+          datosPersonalizado.imagen_url = camisasData[0].imagen_url;
+        }
+      }
+    } catch (e) {
+      console.error("Error extrayendo imagen:", e);
+    }
+
+    const { error: insertError } = await supabase
+      .from("pedidos_personalizados")
+      .insert(datosPersonalizado);
+
+    if (insertError) {
+      console.error("Error insertando en personalizados:", insertError);
+      Swal.fire("Error", "No se pudo reconsiderar el pedido", "error");
+      return;
+    }
+
+    // Eliminar de rechazados
+    const { error: deleteError } = await supabase
+      .from("pedidos_rechazados")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) {
+      console.error("Error eliminando de rechazados:", deleteError);
+      Swal.fire("Error", "No se pudo completar la reconsideración", "error");
+      return;
+    }
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById("modalPedido"));
+    if (modal) modal.hide();
+
+    Swal.fire({
+      icon: "success",
+      title: "¡Reconsiderado!",
+      html: `
+        <div class="text-start">
+          <p>Pedido personalizado movido a <strong>Pedidos Personalizados Pendientes</strong></p>
+          <p class="text-muted small">Ahora aparece en la sección de pedidos personalizados.</p>
+        </div>
+      `,
+      timer: 3000,
+      showConfirmButton: false
+    });
+
+    // Recargar las vistas correspondientes
+    setTimeout(() => {
+      if (window.cargarVista) {
+        window.cargarVista('personalizados');
+      }
+    }, 1000);
+
+  } catch (error) {
+    console.error("Error en reconsiderarPersonalizado:", error);
+    Swal.fire("Error", "Ocurrió un error al reconsiderar el pedido", "error");
+  }
+}
+
+
 // Hacer las funciones disponibles globalmente
 window.verPedido = verPedido;
 window.verPedidoGeneral = verPedidoGeneral;
@@ -1080,3 +1192,5 @@ window.enviarCorreoAprobacion = enviarCorreoAprobacion;
 window.eliminarCompletado = eliminarCompletado;
 window.eliminarRechazado = eliminarRechazado;
 window.reconsiderarPedido = reconsiderarPedido;
+
+window.reconsiderarPersonalizado = reconsiderarPersonalizado;

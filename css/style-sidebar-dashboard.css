@@ -12,9 +12,10 @@
       to bottom,
       #f6fffe,
       #f6fffe83,
-      rgba(0, 0, 0, 0.01)
+      rgba(124, 124, 124, 0.616)
   );
   pointer-events: none;   /* no bloquea clics */
+  backdrop-filter: blur(2px);
   z-index: 0;
 }
 
@@ -46,6 +47,21 @@
   background: linear-gradient(135deg, #CB2D2D, #E84E4E);
 }
 
-.lbl-Adm{
-  color: #252525;
+
+.img-logo-aside{
+  width: 80px;
+  height: auto;
+}
+
+.lbl-as-pendientes{
+  font-size: 18px;
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: -10px;
+}
+
+.lbl-as-personalizados{
+  font-size: 18px;
+  text-transform: uppercase;
+  margin-top: 10px;
 }

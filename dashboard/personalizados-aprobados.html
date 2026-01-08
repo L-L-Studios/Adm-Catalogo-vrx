@@ -1,0 +1,56 @@
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body card-p-pers">
+        <h6 class="text-muted lbl-p-pers">Personalizados Aprobados</h6>
+        <h3 id="total-aprobados">0</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="c-b-personalizado">
+          <div class="shadow__input_p"></div>
+          <input id="busqueda-aprobados" class="form-control" placeholder="Buscar por nombre o email...">
+        </div>
+      </div>
+    </div>
+
+    <table class="table align-middle table-dashboard">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Talla</th>
+          <th>Mensaje</th>
+          <th>Fecha Aprobación</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-aprobados"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para ver detalles -->
+<div class="modal fade" id="modalPersonalizadoAprobado" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Pedido Aprobado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-aprobado-body">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
